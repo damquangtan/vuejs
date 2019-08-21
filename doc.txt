@@ -1,0 +1,68 @@
+Bài 1: Đối tượng Vue
+1.  Tạo đối tượng Vue
+    -   Một ứng dụng Vue luôn được bắt đầu bằng cách khởi tạo một đối tượng Vue sử dụng hàm Vue.
+    var vm = new Vue({
+        // các tuỳ chọn
+    })
+    -   Khi khởi tạo một đối tượng Vue, bạn truyền vào một object options với các tuỳ chọn. Các tuỳ chọn này sẽ tạo ra các hành vi mong muốn, sẽ học sau.
+    -   Một ứng dụng Vue bao gồm một đối tượng gốc(root Vue instance) được tạo ra với lệnh new Vue. Ứng dụng này thường được sắp xếp thành một cây các
+    component lồng nhàu và được tái sử dụng.
+    -   Một component Vue cũng là một đối tượng Vue và do đó cũng nhận cùng một object options (trừ một số tuỳ chọn chỉ rành riêng cho root).
+2.  Dữ liệu và phương thức.
+    -   Khi một đối tượng Vue được khởi tạo, tất cả các thuộc tính(property) được tìm thấy trong obeject data sẽ được thêm vào reactivity system
+    (hiểu nôm na là "hệ thống phản ứng") của Vue. Điều này có nghĩa Vue sẽ react (phản ứng) khi giá trị của các thuộc tính này thay đổi, và tự cập nhật
+    tương ứng với các giá trị mới.
+    -   Ví dụ:
+        // Khởi tạo một object data
+        var data: { a: 1 }
+        // Object này được truyền vào một đối tượng Vue
+        var vm = new Vue({
+            data: data
+        })
+        // Truy xuất đến thuộc tính của đối tượng
+        // trả về giá trị của object "data" đã khởi tạo.
+        vm.a == data.a // => true
+
+        // Thay đổi thuộc tính của vm cũng ảnh hưởng đến dữ liệu bạn đầu.
+        vm.a = 2
+        data.a // => 2
+        // Và ngược lại
+        data.a = 3
+        vm.a // => 3
+
+    -   Khi dữ liệu thay đổi, vue cũng sẽ render lại. Cũng nên lưu ý rằng một thuộc tính trong object data chỉ trở nên reactive nếu nó đã tồn tại khi chúng
+    ta khởi tạo đối tượng Vue. Có nghĩa là nếu bạn thêm vào một thuộc tính mới như sau:
+        vm.b = 'aloha' // trong đối tượng lúc đầu khởi tạo sẽ chưa có thuộc tính bao
+    thì những thay đổi với b sẽ không được kích hoạt trên Vue.
+    -   Ngoại lệ duy nhất ở đây là việc sử dụng Object.freeze(). Object.freeze() ngăn không cho những thuộc tính đã có sẵn bị chỉnh sửa, cũng có nghĩa là
+    hệ thống reactivity không thể theo dõi các thay đổi xảy ra.
+    -   Ngoài datadata, một đối tượng Vue cũng hỗ trợ một số thuộc tính và phương thức đối tượng khác. Các thuộc tính và phương thức nàynày được bắt đầu
+    bằng ký hiệu $ để phân biệt thuộc tính và phương thức do người dùng định nghĩa.
+    -   Ví dụ:
+        var data = { a: 1 }
+        var vm = new Vue({
+            el: '#example',
+            data: data
+        })
+
+        vm.$data == data // => true
+        vm.$elel === dọcument.getElementById('example') // => true
+        // $watch là một phương thức của đối tượng 
+        vm.$watch('a', function(newValue, oldValue) {
+            // Hàm callback này sẽ được gọi khi vm.a thay đổi.
+        })
+3.  Vòng đời của đối tượng.
+    -   Khi khởi tạo, một đối tượng Vue sẽ đi qua nhiều bước khác nhau - cài đặt quan sát dữ liệu(data observation), biên dịch template, gắn kết vào DOM,
+    cập nhật DOM khi dữ liệu thay đổi.  Trong suốt tiến trình này, nó cũng sẽ thực thi một số hàm gọi là lifecycle hook, giúp người dùng thêm code của mình
+    vào các giai đoạn(stage) cụ thể trong vòng đời của đối tượng.
+    -   Ví du: hook created có thể được dùng để thực thi code khi một đối tượng được khởi tạo:
+        new Vue({
+            data: {
+                a: 1
+            },
+            created: function() {
+                console.log('giá trị của a la: ' + this.a)
+            }
+        })
+    -   Các hook như mounted, updated, destroyed cũng được gọi vào các giai đoạn khác nhau trong vòng đời của đối tượng. Tất cả các hook này đều được thực
+    thi với ngữ cảnh this trỏ đến đối tượng Vue hiện hành.
